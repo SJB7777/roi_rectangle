@@ -1,1 +1,1 @@
-from .roi_rect import RoiRectangle
+from .roi_rectangle import RoiRectangle
