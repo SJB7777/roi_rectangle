@@ -16,7 +16,7 @@ setup(
     url = "https://github.com/SJB7777/roi_rectangle",
     long_description_content_type="text/markdown",
     long_description=long_description,
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests"]),
     install_requires=["numpy"],
     keywords=[],
     classifiers=[
