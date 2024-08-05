@@ -26,8 +26,8 @@ class RoiRectangle:
 
     def __post_init__(self):
 
-        self.width = self.x2 - self.x1 if self.x2 is not None else None
-        self.height = self.y2 - self.y1 if self.y2 is not None else None
+        self.width = self.x2 - self.x1 + 1 if self.x2 is not None else None
+        self.height = self.y2 - self.y1 + 1 if self.y2 is not None else None
 
     @property
     def center(self) -> Optional[tuple[int, int]]:
@@ -48,9 +48,11 @@ class RoiRectangle:
         if self.x2 is None or self.y2 is None:
             return None
         
-        cx, cy = new_center
-        dx, dy = self.width // 2, self.height // 2
-        self.x1, self.y1, self.x2, self.y2 = cx - dx, cy - dy, cx + dx, cy + dy
+        x_f, y_f = new_center
+        x_i, y_i = self.center
+
+        dx, dy = x_f - x_i, y_f - y_i
+        self.x1, self.y1, self.x2, self.y2 = self.x1 + dx, self.y1 + dy, self.x2 + dx, self.y2 + dy
 
     def resize(self, new_width: int, new_height: int) -> None:
         """
