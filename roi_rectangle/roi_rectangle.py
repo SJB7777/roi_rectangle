@@ -1,7 +1,9 @@
-from dataclasses import dataclass, field
-import numpy as np
+from __future__ import annotations
 
+from dataclasses import dataclass, field
 from typing import Optional
+
+import numpy as np
 import numpy.typing as npt
 
 
@@ -15,6 +17,9 @@ class RoiRectangle:
         y1 (int): The y-coordinate of the top-left corner of the rectangle.
         x2 (int): The x-coordinate of the bottom-right corner of the rectangle.
         y2 (int): The y-coordinate of the bottom-right corner of the rectangle.
+
+        The cropping operation uses half-open intervals [x1, x2) and [y1, y2).
+        This means the coordinates (x2, y2) are not included in the cropped region.
     """
 
     x1: int = field(init=True, repr=True)
@@ -26,8 +31,8 @@ class RoiRectangle:
 
     def __post_init__(self):
 
-        self.width = self.x2 - self.x1 + 1 if self.x2 is not None else None
-        self.height = self.y2 - self.y1 + 1 if self.y2 is not None else None
+        self.width = self.x2 - self.x1 if self.x2 is not None else None
+        self.height = self.y2 - self.y1 if self.y2 is not None else None
 
     @property
     def center(self) -> Optional[tuple[int, int]]:
@@ -38,7 +43,7 @@ class RoiRectangle:
             return None
         return (self.x1 + self.x2) // 2, (self.y1 + self.y2) // 2
 
-    def move_to_center(self, new_center: tuple[int, int]) -> None:
+    def move_to_center(self, new_center: tuple[int, int]) -> RoiRectangle:
         """
         Move the ROI to a new center position.
 
@@ -50,11 +55,11 @@ class RoiRectangle:
         
         x_f, y_f = new_center
         x_i, y_i = self.center
-
         dx, dy = x_f - x_i, y_f - y_i
-        self.x1, self.y1, self.x2, self.y2 = self.x1 + dx, self.y1 + dy, self.x2 + dx, self.y2 + dy
 
-    def resize(self, new_width: int, new_height: int) -> None:
+        return RoiRectangle(self.x1 + dx, self.y1 + dy, self.x2 + dx, self.y2 + dy)
+
+    def resize(self, new_width: int, new_height: int) -> RoiRectangle:
         """
         Resize the ROI to a new width and height.
 
@@ -66,11 +71,11 @@ class RoiRectangle:
             return None
         
         cx, cy = self.center
-        dx, dy = new_width // 2, new_height // 2
-        self.x1, self.y1, self.x2, self.y2 = cx - dx, cy - dy, cx + dx, cy + dy
-        self.width, self.height = new_width, new_height
+        sub_dx, sub_dy = new_width // 2, new_height // 2
+        plus_dx, plus_dy = new_width - sub_dx, new_height - sub_dy
+        return RoiRectangle(cx - sub_dx, cy - sub_dy, cx + plus_dx, cy + plus_dy)
 
-    def get_coordinate(self) -> tuple[Optional[int], Optional[int], Optional[int], Optional[int]]:
+    def to_tuple(self) -> tuple[Optional[int], Optional[int], Optional[int], Optional[int]]:
         """
         Get the coordinates of the ROI.
         """
@@ -95,8 +100,8 @@ class RoiRectangle:
         Returns:
             np.ndarray: Sliced region of the image.
         """
-        x2 = self.x2 + 1 if self.x2 is not None else None
-        y2 = self.y2 + 1 if self.y2 is not None else None
+        x2 = self.x2 if self.x2 is not None else None
+        y2 = self.y2 if self.y2 is not None else None
         return image[..., self.y1 : y2, self.x1 : x2]
 
     def __repr__(self) -> str:
@@ -111,7 +116,6 @@ class RoiRectangle:
         return cls(x1=x1, y1=y1, x2=x2, y2=y2)
 
 if __name__ == "__main__":
-    import numpy as np
     import matplotlib.pyplot as plt
 
 
@@ -134,21 +138,20 @@ if __name__ == "__main__":
 
     # ROI 이동 테스트
     new_center = (50, 50)
-    roi.move_to_center(new_center)
+    
     print("\nAfter Moving to Center:")
-    print(roi)
+    print(roi.move_to_center(new_center))
 
     # ROI 크기 조절 테스트
     new_width, new_height = 30, 40
-    roi.resize(new_width, new_height)
+    
     print("\nAfter Resizing:")
-    print(roi)
+    print(roi.resize(new_width, new_height))
 
     # ROI 영역 슬라이싱 테스트
     roi_slice = roi.slice(test_image)
     print("\nROI Slice:")
     print(roi_slice)
-    
 
     # 원본 이미지 시각화
     plt.figure(figsize=(8, 4))
@@ -165,5 +168,12 @@ if __name__ == "__main__":
     plt.imshow(roi_slice, cmap='gray')
 
     # ROI 영역 표시
-    plt.gca().add_patch(plt.Rectangle((roi.x1, roi.y1), roi.width, roi.height, linewidth=2, edgecolor='r', facecolor='none'))
+    plt.gca().add_patch(plt.Rectangle(
+        (roi.x1, roi.y1),
+        roi.width,
+        roi.height,
+        linewidth=2,
+        edgecolor='r',
+        facecolor='none'
+    ))
     plt.show()

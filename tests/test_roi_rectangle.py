@@ -1,6 +1,13 @@
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import pytest
-from roi_rectangle import RoiRectangle
 import numpy as np
+
+from roi_rectangle import RoiRectangle
+
 
 def test_roi_rectangle_init():
     roi = RoiRectangle(x1=10, y1=20, x2=30, y2=40)
@@ -17,7 +24,7 @@ def test_roi_rectangle_center():
 
 def test_roi_rectangle_move_to_center():
     roi = RoiRectangle(x1=10, y1=20, x2=30, y2=40)
-    roi.move_to_center((50, 60))
+    roi = roi.move_to_center((50, 60))
     assert roi.x1 == 40
     assert roi.y1 == 50
     assert roi.x2 == 60
@@ -25,17 +32,17 @@ def test_roi_rectangle_move_to_center():
 
 def test_roi_rectangle_resize():
     roi = RoiRectangle(x1=10, y1=20, x2=30, y2=40)
-    roi.resize(40, 60)
+    roi = roi.resize(40, 60)
     assert roi.x1 == 0
-    assert roi.y1 == 10
+    assert roi.y1 == 0
     assert roi.x2 == 40
-    assert roi.y2 == 70
+    assert roi.y2 == 60
     assert roi.width == 40
     assert roi.height == 60
 
-def test_roi_rectangle_get_coordinate():
+def test_roi_rectangle_to_tuple():
     roi = RoiRectangle(x1=10, y1=20, x2=30, y2=40)
-    assert roi.get_coordinate() == (10, 20, 30, 40)
+    assert roi.to_tuple() == (10, 20, 30, 40)
 
 def test_roi_rectangle_get_area():
     roi = RoiRectangle(x1=10, y1=20, x2=30, y2=40)
