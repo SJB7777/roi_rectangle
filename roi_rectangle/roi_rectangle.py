@@ -43,6 +43,14 @@ class RoiRectangle:
             return None
         return (self.x1 + self.x2) // 2, (self.y1 + self.y2) // 2
 
+    def move(self, dx: int, dy: int) -> RoiRectangle:
+        return RoiRectangle(
+            self.x1 + dx,
+            self.y1 + dy,
+            self.x2 + dx,
+            self.y2 + dy
+        )
+
     def move_to_center(self, new_center: tuple[int, int]) -> RoiRectangle:
         """
         Move the ROI to a new center position.
