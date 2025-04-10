@@ -13,10 +13,10 @@ A Python module for handling rectangular regions of interest (ROI) in images.
 
 ## Installation
 
-To install the `roi-rectangle` module, use:
+To install the `roi_rectangle` module, use:
 
 ```sh
-pip install roi-rectangle
+pip install roi_rectangle
 ```
 
 ## Usage
