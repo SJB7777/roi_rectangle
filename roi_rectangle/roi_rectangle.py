@@ -44,6 +44,8 @@ class RoiRectangle:
         return (self.x1 + self.x2) // 2, (self.y1 + self.y2) // 2
 
     def move(self, dx: int, dy: int) -> RoiRectangle:
+        """move the ROI relative to its current position.
+        """
         return RoiRectangle(
             self.x1 + dx,
             self.y1 + dy,
@@ -77,7 +79,7 @@ class RoiRectangle:
         """
         if self.x2 is None or self.y2 is None:
             return None
-        
+
         cx, cy = self.center
         sub_dx, sub_dy = new_width // 2, new_height // 2
         plus_dx, plus_dy = new_width - sub_dx, new_height - sub_dy
@@ -89,14 +91,31 @@ class RoiRectangle:
         """
         return self.x1, self.y1, self.x2, self.y2
 
-    def get_area(self) -> Optional[int]:
+    @property
+    def area(self) -> Optional[int]:
         """
         Get the area of the ROI.
         """
         if self.x2 is None or self.y2 is None:
             return None
-        
+
         return self.width * self.height
+
+    @property
+    def shape(self) -> Optional[tuple[int, int]]:
+        """
+        get the shape of the ROI.
+        """
+        return (self.height, self.width)
+
+    def get_slices(self) -> tuple[slice, slice]:
+        """
+        Get the slices for the ROI.
+
+        Returns:
+            tuple: Slices for the x and y axes.
+        """
+        return ..., slice(self.y1, self.y2), slice(self.x1,  self.x2), 
 
     def slice(self, image: np.ndarray) -> npt.NDArray:
         """
@@ -108,9 +127,7 @@ class RoiRectangle:
         Returns:
             np.ndarray: Sliced region of the image.
         """
-        x2 = self.x2 if self.x2 is not None else None
-        y2 = self.y2 if self.y2 is not None else None
-        return image[..., self.y1 : y2, self.x1 : x2]
+        return image[..., self.y1 : self.y2, self.x1 : self.x2]
 
     def __repr__(self) -> str:
         """
@@ -120,8 +137,13 @@ class RoiRectangle:
     
     @classmethod
     def from_tuple(cls, coords: tuple[int, int, int, int]) -> 'RoiRectangle':
+        """
+        Create a RoiRectangle instance from a tuple of coordinates.
+        The tuple should contain four integers: (x1, y1, x2, y2).   
+        """
         x1, y1, x2, y2 = coords
         return cls(x1=x1, y1=y1, x2=x2, y2=y2)
+
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
