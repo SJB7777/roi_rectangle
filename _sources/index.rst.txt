@@ -15,4 +15,7 @@ documentation for details.
    :maxdepth: 2
    :caption: Contents:
 
-   modules
+.. automodule:: roi_rectangle
+   :members:
+   :undoc-members:
+   :show-inheritance:
