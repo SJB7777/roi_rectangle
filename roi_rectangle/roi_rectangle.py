@@ -145,6 +145,9 @@ class RoiRectangle:
         return cls(x1=x1, y1=y1, x2=x2, y2=y2)
 
 
+RoiRectangle.__module__ = "roi_rectangle"
+
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
