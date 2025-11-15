@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 test_image = np.random.random((100, 100))
 
 # Create an instance of RoiRectangle
-roi = RoiRectangle(x1=20, y1=30, x2=70, y2=80)
+roi = RoiRectangle(y1=30, y2=80, x1=20, x2=70)
 
 # Print ROI information
 print("Initial ROI:")
