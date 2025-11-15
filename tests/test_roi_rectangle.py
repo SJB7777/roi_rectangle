@@ -21,7 +21,7 @@ def test_roi_rectangle_center():
 
 def test_roi_rectangle_move_to_center():
     roi = RoiRectangle(x1=10, y1=20, x2=30, y2=40)
-    roi = roi.move_to_center((50, 60))
+    roi = roi.recenter((50, 60))
     assert roi.x1 == 40
     assert roi.y1 == 50
     assert roi.x2 == 60
