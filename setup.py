@@ -13,7 +13,7 @@ setup(
     author="Isaac Yong",
     author_email="esakyong1866@naver.com",
     description="A module for handling rectangular regions of interest (ROI) in images.",
-    url = "https://github.com/SJB7777/roi_rectangle",
+    url = "https://github.com/NaNIsaac/roi_rectangle",
     long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(exclude=["tests"]),
