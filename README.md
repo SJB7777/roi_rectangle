@@ -1,12 +1,16 @@
 # roi_rectangle
 
-A small, typed helper for rectangular regions of interest (ROI) in NumPy images.
-
 [![PyPI version](https://img.shields.io/pypi/v/roi-rectangle)](https://pypi.org/project/roi-rectangle/)
-[![Python versions](https://img.shields.io/pypi/pyversions/roi-rectangle)](https://pypi.org/project/roi-rectangle/)
 [![Tests](https://github.com/NaNIsaac/roi_rectangle/actions/workflows/tests.yml/badge.svg)](https://github.com/NaNIsaac/roi_rectangle/actions/workflows/tests.yml)
 [![License](https://img.shields.io/pypi/l/roi-rectangle)](https://github.com/NaNIsaac/roi_rectangle/blob/main/LICENSE)
-[![Downloads](https://static.pepy.tech/badge/roi-rectangle)](https://pepy.tech/project/roi-rectangle)
+
+**A small, typed helper for rectangular regions of interest (ROI) in NumPy images: one dataclass to crop, measure, move, and resize.**
+
+![An ROI drawn on a sample image, the crop it selects, and the values it reports](https://raw.githubusercontent.com/NaNIsaac/roi_rectangle/main/docs/roi_example.png)
+
+A 100×120 sample image (Gaussian spot plus noise, seed 0). Orange: `roi`; blue: the ROI
+recentered on the brightest pixel of the crop and resized to 20×20. The values on the right are
+the script's own output. Regenerate with `python examples/readme_figure.py` (needs matplotlib).
 
 ## Install
 
