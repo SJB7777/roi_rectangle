@@ -91,5 +91,13 @@ def test_roi_rectangle_none_values():
     assert roi.area is None
 
 
+def test_resize_keeps_unbounded_axis_start():
+    # Regression: resizing shifted x1/y1 of an unbounded (None) axis.
+    roi = RoiRectangle(y1=20, y2=40, x1=10, x2=None)
+    assert roi.resize(30, 10) == RoiRectangle(y1=25, y2=35, x1=10, x2=None)
+    roi = RoiRectangle(y1=20, y2=None, x1=10, x2=30)
+    assert roi.resize(30, 10) == RoiRectangle(y1=20, y2=None, x1=5, x2=35)
+
+
 if __name__ == "__main__":
     pytest.main()

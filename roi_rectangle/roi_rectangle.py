@@ -86,10 +86,11 @@ class RoiRectangle:
         new_x1, new_y1 = cx - half_w, cy - half_h
         new_x2, new_y2 = cx + (new_width - half_w), cy + (new_height - half_h)
 
+        # An unbounded (None) axis has no size to change: keep its start.
         return RoiRectangle(
-            y1=new_y1,
+            y1=new_y1 if self.y2 is not None else self.y1,
             y2=new_y2 if self.y2 is not None else None,
-            x1=new_x1,
+            x1=new_x1 if self.x2 is not None else self.x1,
             x2=new_x2 if self.x2 is not None else None,
         )
 
