@@ -1,81 +1,63 @@
 # roi_rectangle
 
-A Python module for handling rectangular regions of interest (ROI) in images.
+A small, typed helper for rectangular regions of interest (ROI) in NumPy images.
 
-## Features
+[![PyPI version](https://img.shields.io/pypi/v/roi-rectangle)](https://pypi.org/project/roi-rectangle/)
+[![Python versions](https://img.shields.io/pypi/pyversions/roi-rectangle)](https://pypi.org/project/roi-rectangle/)
+[![Tests](https://github.com/NaNIsaac/roi_rectangle/actions/workflows/tests.yml/badge.svg)](https://github.com/NaNIsaac/roi_rectangle/actions/workflows/tests.yml)
+[![License](https://img.shields.io/pypi/l/roi-rectangle)](https://github.com/NaNIsaac/roi_rectangle/blob/main/LICENSE)
+[![Downloads](https://static.pepy.tech/badge/roi-rectangle)](https://pepy.tech/project/roi-rectangle)
 
-- Define a rectangular ROI with coordinates.
-- Get the center of the ROI.
-- Move the ROI to a new center.
-- Resize the ROI.
-- Get the coordinates and area of the ROI.
-- Slice the ROI region from an image.
-
-## Installation
-
-To install the `roi_rectangle` module, use:
+## Install
 
 ```sh
-pip install roi_rectangle
+pip install roi-rectangle
 ```
 
-## Usage
-
-Here's an example of how to use the `RoiRectangle` module:
+## Quickstart
 
 ```python
-from roi_rect import RoiRectangle
 import numpy as np
-import matplotlib.pyplot as plt
+from roi_rectangle import RoiRectangle
 
-# Create a test image
-test_image = np.random.random((100, 100))
+image = np.arange(100 * 120).reshape(100, 120)
 
-# Create an instance of RoiRectangle
-roi = RoiRectangle(y1=30, y2=80, x1=20, x2=70)
+roi = RoiRectangle(y1=30, y2=80, x1=20, x2=70)  # rows [30, 80), cols [20, 70)
+print(roi.shape, roi.center, roi.area)          # (50, 50) (45, 55) 2500
 
-# Print ROI information
-print("Initial ROI:")
-print(roi)
+crop = roi.slice(image)                         # same as image[30:80, 20:70]
+print(crop.shape)                               # (50, 50)
 
-# Get the center coordinate of the ROI
-print("Center Coordinate:", roi.center)
-
-# Get the width and height of the ROI
-print("Width:", roi.width)
-print("Height:", roi.height)
-
-# Move the ROI to a new center
-new_center = (50, 50)
-roi.move_to_center(new_center)
-print("\nAfter Moving to Center:")
-print(roi)
-
-# Resize the ROI
-new_width, new_height = 30, 40
-roi.resize(new_width, new_height)
-print("\nAfter Resizing:")
-print(roi)
-
-# Slice the ROI region from the test image
-roi_slice = roi.slice(test_image)
-print("\nROI Slice:")
-print(roi_slice)
-
-# Visualize the original image and the sliced ROI
-plt.figure(figsize=(8, 4))
-plt.subplot(1, 2, 1)
-plt.title('Original Image')
-plt.imshow(test_image, cmap='gray')
-
-plt.subplot(1, 2, 2)
-plt.title('ROI Slice')
-plt.imshow(roi_slice, cmap='gray')
-
-plt.gca().add_patch(plt.Rectangle((roi.x1, roi.y1), roi.width, roi.height, linewidth=2, edgecolor='r', facecolor='none'))
-plt.show()
+roi2 = roi.recenter((60, 40)).resize(10, 20)    # methods return new ROIs
+print(roi2)                                     # RoiRectangle(y1=30, y2=50, x1=55, x2=65)
+print(image[roi2.get_slices()].shape)           # (20, 10)
 ```
+
+## API overview
+
+`RoiRectangle(y1, y2, x1, x2)` is a dataclass. Intervals are half-open: `[y1, y2)` and `[x1, x2)`.
+`y2` or `x2` may be `None`, meaning the region extends to the image edge on that axis.
+A `ValueError` is raised if `y2 < y1` or `x2 < x1`.
+
+| Member | Description |
+| --- | --- |
+| `width`, `height`, `shape`, `area` | Size properties (`shape` is `(height, width)`); `None` for unbounded axes. |
+| `center` | `(x, y)` center, rounded down; `None` if any axis is unbounded. |
+| `move(dx, dy)` | New ROI shifted by `(dx, dy)`. |
+| `recenter((x, y))` | New ROI of the same size centered at `(x, y)`. |
+| `resize(width, height)` | New ROI with the given size around the same center. |
+| `slice(image)` | `image[..., y1:y2, x1:x2]`; works on stacks with leading axes. |
+| `get_slices()` | `(slice(y1, y2), slice(x1, x2))` for indexing. |
+| `to_tuple()`, `from_tuple(t)` | Convert to/from `(y1, y2, x1, x2)`. |
+
+Coordinates are passed to NumPy unchanged: an ROI past the bottom or right edge is clipped by NumPy,
+while negative coordinates count from the end of the axis.
+
+## Citation
+
+If you use this package in your work, please cite it using the metadata in
+[CITATION.cff](https://github.com/NaNIsaac/roi_rectangle/blob/main/CITATION.cff).
 
 ## License
 
-This project is licensed under the MIT License.
+MIT. See [LICENSE](https://github.com/NaNIsaac/roi_rectangle/blob/main/LICENSE).

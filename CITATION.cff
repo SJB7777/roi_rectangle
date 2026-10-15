@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: roi_rectangle
+abstract: A module for handling rectangular regions of interest (ROI) in images.
+type: software
+authors:
+  - family-names: Yong
+    given-names: Isaac
+    affiliation: Sogang University
+repository-code: "https://github.com/NaNIsaac/roi_rectangle"
+url: "https://pypi.org/project/roi-rectangle/"
+license: MIT
+version: 1.1.0
+keywords:
+  - roi
+  - image
+  - numpy
