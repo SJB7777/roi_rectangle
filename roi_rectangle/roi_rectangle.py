@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -28,7 +28,7 @@ class RoiRectangle:
     x1: int = field(init=True, repr=True)
     x2: Optional[int] = field(init=True, repr=True)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.x2 is not None and self.x2 < self.x1:
             raise ValueError("x2 must be >= x1")
         if self.y2 is not None and self.y2 < self.y1:
@@ -122,13 +122,13 @@ class RoiRectangle:
         Get the slices for the ROI.
 
         Returns:
-            tuple: Slices for the x and y axes.
+            tuple: Slices for the y and x axes, in that order.
         """
         return slice(self.y1, self.y2), slice(self.x1,  self.x2)
 
-    def slice(self, image: np.ndarray) -> npt.NDArray:
+    def slice(self, image: npt.NDArray[Any]) -> npt.NDArray[Any]:
         """
-        Slice the specified region from the image.
+        Slice the specified region from the last two axes of the image.
 
         Args:
             image (np.ndarray): Input image.
@@ -139,7 +139,7 @@ class RoiRectangle:
         return image[..., self.y1 : self.y2, self.x1 : self.x2]
 
     @classmethod
-    def from_tuple(cls, coords: tuple[int, Optional[int], int, Optional[int]]) -> 'RoiRectangle':
+    def from_tuple(cls, coords: tuple[int, Optional[int], int, Optional[int]]) -> RoiRectangle:
         """
         Create a RoiRectangle instance from a tuple of coordinates.
         The tuple should contain four integers: (y1, y2, x1, x2).   
@@ -150,66 +150,3 @@ class RoiRectangle:
 
 RoiRectangle.__module__ = "roi_rectangle"
 
-
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    from matplotlib import patches
-
-    # 테스트용 이미지 생성
-    test_image = np.random.random((100, 100))
-
-    # RoiRectangle 인스턴스 생성
-    roi = RoiRectangle(x1=20, y1=30, x2=70, y2=80)
-
-    # ROI 정보 출력
-    print("Initial ROI:")
-    print(roi)
-
-    # ROI 중심 좌표 출력
-    print("Center Coordinate:", roi.center)
-
-    # ROI 크기 출력
-    print("Width:", roi.width)
-    print("Height:", roi.height)
-
-    # ROI 이동 테스트
-    new_center = (50, 50)
-    
-    print("\nAfter Moving to Center:")
-    print(roi.recenter(new_center))
-
-    # ROI 크기 조절 테스트
-    new_width, new_height = 30, 40
-    
-    print("\nAfter Resizing:")
-    print(roi.resize(new_width, new_height))
-
-    # ROI 영역 슬라이싱 테스트
-    roi_slice = roi.slice(test_image)
-    print("\nROI Slice:")
-    print(roi_slice)
-
-    # 원본 이미지 시각화
-    plt.figure(figsize=(8, 4))
-    plt.subplot(1, 2, 1)
-    plt.title('Original Image')
-    plt.imshow(test_image, cmap='gray')
-
-    # ROI 슬라이싱
-    roi_slice = roi.slice(test_image)
-
-    # 슬라이싱한 이미지 시각화
-    plt.subplot(1, 2, 2)
-    plt.title('ROI Slice')
-    plt.imshow(roi_slice, cmap='gray')
-
-    # ROI 영역 표시
-    plt.gca().add_patch(patches.Rectangle(
-        (roi.x1, roi.y1),
-        roi.width,
-        roi.height,
-        linewidth=2,
-        edgecolor='r',
-        facecolor='none'
-    ))
-    plt.show()
