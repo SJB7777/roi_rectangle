@@ -41,7 +41,7 @@ def test_roi_rectangle_resize():
 
 def test_roi_rectangle_to_tuple():
     roi = RoiRectangle(x1=10, y1=20, x2=30, y2=40)
-    assert roi.to_tuple() == (10, 20, 30, 40)
+    assert roi.to_tuple() == (20, 40, 10, 30)  # (y1, y2, x1, x2)
 
 
 def test_roi_rectangle_area():
@@ -70,7 +70,7 @@ def test_roi_rectangle_get_slices():
 
 
 def test_roi_rectangle_from_tuple():
-    roi = RoiRectangle.from_tuple((10, 20, 30, 40))
+    roi = RoiRectangle.from_tuple((20, 40, 10, 30))  # (y1, y2, x1, x2)
     assert roi.x1 == 10
     assert roi.y1 == 20
     assert roi.x2 == 30
